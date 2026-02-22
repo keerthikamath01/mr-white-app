@@ -1,0 +1,11 @@
+# Ensure Unix-style LF for Dart, YAML, and shell scripts
+*.dart text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.sh text eol=lf
+
+# Keep Windows CRLF for batch scripts
+*.bat text eol=crlf
+
+# All other text files
+* text=auto

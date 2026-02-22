@@ -1,0 +1,80 @@
+# ===============================
+# Flutter/Dart
+# ===============================
+# Build outputs
+/build/
+/**/doc/api/
+/**/ios/Flutter/.last_build_id
+.dart_tool/
+/.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+/.pub/
+coverage/
+
+# ===============================
+# Secrets / environment
+# ===============================
+.env
+.env.*
+secrets.json
+
+# ===============================
+# iOS / Xcode
+# ===============================
+ios/Pods/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/FlutterPluginRegistrant.*
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# ===============================
+# Android / Gradle
+# ===============================
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/.idea/
+
+# ===============================
+# IDEs / Editors
+# ===============================
+# IntelliJ / Android Studio
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code
+.vscode/  # Uncomment if you want VS Code configs in Git
+
+# Miscellaneous
+*.class
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# Logs and lock files
+*.log
+*.lock
+
+# Symbolication / obfuscation files
+app.*.symbols
+app.*.map.json
+/android/app/debug
+/android/app/profile
+/android/app/release
