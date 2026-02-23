@@ -1,6 +1,8 @@
 import 'dart:math'; 
 import '../models/player.dart';
 import '../models/game_state.dart';
+import 'package:flutter/foundation.dart'; // For ChangeNotifier
+import 'package:flutter/material.dart';
 
 // things to add
 // set max players to 10
@@ -13,7 +15,7 @@ import '../models/game_state.dart';
 
 /// GameViewModel contains all the logic for the Mr. White game.
 /// Handles players, roles, words, reveals, eliminations, and determining the winner.
-class GameViewModel {
+class GameViewModel extends ChangeNotifier {
   
   // Hold all game state
   GameState _gameState = GameState();
@@ -35,6 +37,7 @@ class GameViewModel {
   // Reset game
   void reset() {
     _gameState.reset();
+    notifyListeners();
   }
 
   /// Sets up the game with a list of player names
@@ -49,6 +52,8 @@ class GameViewModel {
 
     // Assign roles (words must already be assigned)
     _gameState.assignRoles();
+
+    notifyListeners();
   }
 
   /// Returns the current player whose role is being revealed
@@ -57,19 +62,26 @@ class GameViewModel {
   /// Advances to the next player in the reveal sequence
   void nextPlayerReveal() {
     _gameState.nextReveal();
+    notifyListeners();
   }
 
   /// Marks a player as eliminated
   void eliminatePlayer(Player player) {
     _gameState.eliminatePlayer(player);
+    
+    // Check if game is over after elimination
+    _gameState.checkGameOver(); // updates winner if needed
+    notifyListeners(); // notify UI
   }
 
   /// Determine if game is over
-  bool get isGameOver => _gameState.checkGameOver();
+  bool get isGameOver => _gameState.winner != Winner.none; // function for this?
 
   /// Assign Mr. White as winner if correct word is guessed
   void resolveMrWhiteGuess(String guess) {
     _gameState.resolveMrWhiteGuess(guess);
+    _gameState.checkGameOver(); // in case guess ends the game
+    notifyListeners(); // notify UI of winner change
   }
 
   /// Returns a string message declaring the winner
