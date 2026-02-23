@@ -21,4 +21,8 @@ class Player {
     this.role = role;
     this.word = word;
   }
+
+  void eliminate() {
+    isEliminated = true;
+  }
 }

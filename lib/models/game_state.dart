@@ -79,7 +79,7 @@ class GameState {
   }
 
 
-  /// Randonly assigns roles to players (depends on words already assigned)
+  /// Randomly assigns roles to players (depends on words already assigned)
   void assignRoles() {
     // Error message
     assert(mainWord != null && undercoverWord != null, "Words must be assigned first!");
@@ -114,6 +114,136 @@ class GameState {
       }
     }
   }
+
+  /// Returns the current player whose role is being revealed
+  Player getCurrentPlayer() => players[currentRevealIndex];
+
+  /// Advances to the next player in the reveal sequence
+  void nextReveal() {
+    if (currentRevealIndex < players.length - 1) currentRevealIndex++;
+  }
+
+  /// Marks a player as eliminated
+  void eliminatePlayer(Player player) => player.eliminate();
+
+  /// Determine if game is over
+  bool checkGameOver() {
+    if (winner != Winner.none) return true; // If a winner is already assigned, end game
+
+    // Otherwise, evaluate if any team has won based on remaining players
+
+    // Non-eliminated players
+    final activePlayers = players.where((p) => !p.isEliminated).toList(); // sets instead of lists?
+
+    // Total non Mr. White (Undercovers + Civilians)
+    // Can possibly just do total players - mr white count
+    final nonMrWhite = players.where((p) => p.role != Role.mrWhite).toList();
+
+    // Non-eliminated non Mr. White (Undercovers + Civilians)
+    final activeNonMrWhite =
+        activePlayers.where((p) => p.role != Role.mrWhite).length;
+
+    // Eliminated Civilians + Undercovers
+    final eliminatedNonMrWhite = nonMrWhite.length - activeNonMrWhite;
+
+    // Is Mr. White Alive?
+    final mrWhiteAlive = activePlayers.any((p) => p.role == Role.mrWhite);
+
+    // Civilians win condition
+    if (!mrWhiteAlive) { // If White is dead
+      winner = Winner.civilians;
+      return true;
+    }
+
+    // Mr. White win condition
+    if (eliminatedNonMrWhite >= 2) { // 2 wrong eliminations
+      winner = Winner.mrWhite;
+      return true;
+    }
+
+    // Else, no winner yet and game continues
+    return false;
+  }
+
+  /// Assign Mr. White as winner if correct word is guessed
+  void resolveMrWhiteGuess(String guess) {
+    if (guess.toLowerCase() == mainWord?.toLowerCase()) {
+      winner = Winner.mrWhite;
+    }
+  }
+
+  /// Role management functions below
+  ///
+  /// Check if this role can be added to the game based on existing roles/players
+  bool canAddRole({
+    required int totalPlayers,
+    required int currentWhites,
+    required int currentUndercovers,
+    required String role,
+  }) {
+
+    // Determine max special characters (White + Undercover) allowed based on total players
+    int totalSpecialsMax = getTotalSpecialsMax(totalPlayers);
+
+    // Determine max allowed per role
+    int perRoleMax = getPerRoleMax(totalPlayers);
+
+    // Current special characters
+    int currentTotalSpecials = currentWhites + currentUndercovers;
+
+    // Check both conditions
+    bool underPerRoleMax =
+        (role == "white" ? currentWhites < perRoleMax : currentUndercovers < perRoleMax);
+    bool underTotalMax = currentTotalSpecials < totalSpecialsMax;
+
+    return underPerRoleMax && underTotalMax;
+  }
+
+  /// Determine if this role can be removed from the game
+  bool canRemoveRole({
+    required int currentWhites,
+    required int currentUndercovers,
+    required String role,
+  }) {
+
+    // There must be at least one special character
+    bool roleNonzero = (role == "white" ? currentWhites > 0 : currentUndercovers > 0);
+    return roleNonzero && (currentWhites + currentUndercovers > 1);
+  }
+
+  /// If players are deleted, re-evaluate number of special characters accordingly
+  int specialsToReduce({
+    required int totalPlayers,
+    required int currentWhites,
+    required int currentUndercovers,
+  }) {
+
+    // Evaluate total special characters allowed
+    final totalSpecialsMax = getTotalSpecialsMax(totalPlayers);
+    final currentTotalSpecials = currentWhites + currentUndercovers;
+    final excessTotal = currentTotalSpecials - totalSpecialsMax;
+
+    // Allowed per role
+    final perRoleMax = getPerRoleMax(totalPlayers);
+    final excessRole = max(currentWhites, currentUndercovers) - perRoleMax;
+
+    // Excess characters - need to remove
+    final excess = max(excessTotal, excessRole);
+    return excess;
+  }
+
+  /// Max of each special character allowed
+  int getPerRoleMax(int totalPlayers) { 
+    return totalPlayers <= 5 ? 1 : 2; // 5 or 6? 
+  }
+
+  /// Maximum total specials allowed based on number of players
+  int getTotalSpecialsMax(int totalPlayers) { 
+    if (totalPlayers <= 6) return 2; // 2 specials total 
+    if (totalPlayers == 7) return 3; // 3 specials total 
+    return 4; // 8+ players 
+  }
+
 }
 
 
