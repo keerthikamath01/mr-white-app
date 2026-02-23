@@ -17,16 +17,11 @@ class _SetupViewState extends State<SetupView> {
   // Controller for the TextField where the user types a player name
   final TextEditingController controller = TextEditingController();
 
-  // List to store the names of players added to the game
-  final List<String> playerNames = [];
-
-  // Special counts
-  int mrWhiteCount = 1;       // default 1
-  int undercoverCount = 1;    // default 1
 
   @override
   Widget build(BuildContext context) {
     final gameViewModel = context.watch<GameViewModel>();
+    final playerNames = gameViewModel.playerNames;
 
     return Scaffold(
       
@@ -56,13 +51,11 @@ class _SetupViewState extends State<SetupView> {
                 final text = value.text;
 
                 return ElevatedButton( // button
-                  onPressed: text.isEmpty || playerNames.contains(text) // can only add new names
+                  onPressed: text.isEmpty || gameViewModel.playerNames.contains(text) // can only add new names
                       ? null
                       : () {
-                          setState(() {
-                            playerNames.add(text);
-                            controller.clear();
-                          });
+                          gameViewModel.addPlayer(text);
+                          controller.clear();
                         },
                   child: const Text("Add Player"), // button text
                 );
@@ -96,11 +89,7 @@ class _SetupViewState extends State<SetupView> {
                           onPressed: index == 0
                             ? null // disables the button and greys it out
                             : () {
-                              setState(() {
-                                String temp = playerNames[index];
-                                playerNames[index] = playerNames[index - 1]; 
-                                playerNames[index - 1] = temp;
-                              });
+                              gameViewModel.movePlayerUp(index);
                           }
                         ),
 
@@ -110,11 +99,7 @@ class _SetupViewState extends State<SetupView> {
                           onPressed: index == playerNames.length - 1
                             ? null // disables the button and greys it out
                             : () {
-                              setState(() {
-                                String temp = playerNames[index];
-                                playerNames[index] = playerNames[index + 1]; 
-                                playerNames[index + 1] = temp;
-                              });
+                              gameViewModel.movePlayerDown(index);
                           }
                         ),
 
@@ -122,23 +107,7 @@ class _SetupViewState extends State<SetupView> {
                         IconButton(   
                           icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () {
-                            setState(() {
-                              // Remove the selected player from the list
-                              playerNames.removeAt(index);
-                              
-                              // Reduce special characters according to new player count
-                              int specialsToReduce = gameViewModel.specialsToReduce(
-                                totalPlayers: playerNames.length, 
-                                currentWhites: mrWhiteCount, 
-                                currentUndercovers: undercoverCount);
-                              
-                              // Delete Mr. Whites over limit then Undercovers over limit
-                              while ( specialsToReduce > 0 ) {
-                                mrWhiteCount > 1 ? mrWhiteCount-- : undercoverCount--;
-                                specialsToReduce--;
-                              }
-
-                            });
+                            gameViewModel.removePlayerAt(index);
                           },
                         ),
 
@@ -183,33 +152,21 @@ class _SetupViewState extends State<SetupView> {
                             IconButton(
                               icon: const Icon(Icons.remove),
                               // Check if Mr. White can be removed
-                              onPressed: gameViewModel.canRemoveRole( 
-                                currentWhites: mrWhiteCount, 
-                                currentUndercovers: undercoverCount, 
-                                role: "white")
+                              onPressed: gameViewModel.canRemoveRole(role: "white")
                               ? () {
-                                  setState(() {
-                                    mrWhiteCount--; // Reduce Mr. White count
-                                  });
+                                  gameViewModel.decrementMrWhite();
                                 } : null,
                             ),
-                            Text("$mrWhiteCount"),
+                            Text("${gameViewModel.mrWhiteCount}"),
                             
                             // Increment Mr. White button +
                             IconButton(
                               icon: const Icon(Icons.add),
                               // Check if Mr. White can be added
-                              onPressed: gameViewModel.canAddRole(
-                                totalPlayers: playerNames.length,
-                                currentWhites: mrWhiteCount,
-                                currentUndercovers: undercoverCount,
-                                role: "white")
+                              onPressed: gameViewModel.canAddRole(role: "white")
                                 ? () { 
-                                  setState(() { 
-                                    mrWhiteCount++; // Increase Mr. White count
-                                  }); 
+                                  gameViewModel.incrementMrWhite(); 
                                 } : null,
-                                
                             ),
                           ],
                         ),
@@ -228,31 +185,20 @@ class _SetupViewState extends State<SetupView> {
                             IconButton(
                               icon: const Icon(Icons.remove),
                               // Check if Undercover can be removed
-                              onPressed: gameViewModel.canRemoveRole(
-                                currentWhites: mrWhiteCount, 
-                                currentUndercovers: undercoverCount, 
-                                role: "undercover")
+                              onPressed: gameViewModel.canRemoveRole(role: "undercover")
                               ? () {
-                                  setState(() {
-                                    undercoverCount--; // Reduce Undercover count
-                                  });
+                                  gameViewModel.decrementUndercover();
                                 } : null,
                             ),
-                            Text("$undercoverCount"),
+                            Text("${gameViewModel.undercoverCount}"),
 
                             // Increment Undercovers button +
                             IconButton(
                               icon: const Icon(Icons.add),
                               // Check if Undercover can be added
-                              onPressed: gameViewModel.canAddRole(
-                                totalPlayers: playerNames.length,
-                                currentWhites: mrWhiteCount,
-                                currentUndercovers: undercoverCount,
-                                role: "undercover")
+                              onPressed: gameViewModel.canAddRole(role: "undercover")
                                 ? () { 
-                                  setState(() { 
-                                    undercoverCount++; // Increase Undercover count
-                                  }); 
+                                  gameViewModel.incrementUndercover();
                                 } : null, // greyed out if limit reached
                             ),
                           ],
@@ -273,7 +219,7 @@ class _SetupViewState extends State<SetupView> {
                   ? null // Disable if not enough players
                   : () {
                       // Set up the game in the GameViewModel with the entered names
-                      gameViewModel.setupGame(playerNames, mrWhites: mrWhiteCount, undercovers: undercoverCount);
+                      gameViewModel.setupGame(playerNames);
 
                       // Navigate to the RoleRevealView to start revealing roles
                       Navigator.push(

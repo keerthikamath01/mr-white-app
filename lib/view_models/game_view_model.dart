@@ -33,6 +33,12 @@ class GameViewModel extends ChangeNotifier {
 
   final Random _random = Random();
 
+  // Inputs that will be passed to set up the game state (after setup view)
+  // List to store the names of players added to the game
+  List<String> playerNames = [];
+  int mrWhiteCount = 1;
+  int undercoverCount = 1;
+
 
   // Reset game
   void reset() {
@@ -41,10 +47,10 @@ class GameViewModel extends ChangeNotifier {
   }
 
   /// Sets up the game with a list of player names
-  void setupGame(List<String> playerNames, {int mrWhites = 1, int undercovers = 1}) {
+  void setupGame(List<String> playerNames) {
     
     // pass required data to game state
-    _gameState.setupGame(playerNames, mrWhites: mrWhites, undercovers: undercovers);
+    _gameState.setupGame(playerNames, mrWhites: mrWhiteCount, undercovers: undercoverCount);
 
     // Generate words and pass to game state
     final pair = wordPairs[_random.nextInt(wordPairs.length)]; // later replace with AI API
@@ -98,41 +104,104 @@ class GameViewModel extends ChangeNotifier {
     }
   }
 
-  /// Role management functions below
-  /// 
+
+  /// Setup view management
+  /// Manipulate variables that will be passed to game state on game setup
+  /// Add player name to list
+  void addPlayer(String name) {
+    if (playerNames.contains(name) || name.isEmpty) return;
+    playerNames.add(name);
+    notifyListeners();
+  }
+
+  /// Remove player name at index and reduce special character count accordingly
+  void removePlayerAt(int index) {
+    playerNames.removeAt(index);
+
+    // Reduce special characters if needed
+    int extraSpecials = specialsToReduce();
+
+    while (extraSpecials > 0) {
+      if (mrWhiteCount > 1) {
+        mrWhiteCount--;
+      } else {
+        undercoverCount--;
+      }
+      extraSpecials--;
+    }
+
+    notifyListeners();
+  }
+
+  /// Helper functions to modify white/undercover count
+  void incrementMrWhite() {
+    mrWhiteCount++;
+    notifyListeners();
+  }
+
+  void decrementMrWhite() {
+    mrWhiteCount--;
+    notifyListeners();
+  }
+
+  void incrementUndercover() {
+    undercoverCount++;
+    notifyListeners();
+  }
+
+  void decrementUndercover() {
+    undercoverCount--;
+    notifyListeners();
+  }
+
+  /// Move player up in list
+  void movePlayerUp(int index) {
+    if (index <= 0) return;
+
+    final temp = playerNames[index];
+    playerNames[index] = playerNames[index - 1];
+    playerNames[index - 1] = temp;
+
+    notifyListeners();
+  }
+
+  /// Move player down in list
+  void movePlayerDown(int index) {
+    if (index >= playerNames.length - 1) return;
+
+    final temp = playerNames[index];
+    playerNames[index] = playerNames[index + 1];
+    playerNames[index + 1] = temp;
+
+    notifyListeners();
+  }
+
+  /// Role management helper functions below (call game state for logic)
+  /// Pass current inputs defined in game view model
   /// Check if this role can be added to the game based on existing roles/players
   bool canAddRole({
-    required int totalPlayers,
-    required int currentWhites,
-    required int currentUndercovers,
     required String role, // "white" or "undercover"
   }) => _gameState.canAddRole(
-        totalPlayers: totalPlayers,
-        currentWhites: currentWhites,
-        currentUndercovers: currentUndercovers,
+        totalPlayers: playerNames.length,
+        currentWhites: mrWhiteCount,
+        currentUndercovers: undercoverCount,
         role: role,
       );
 
   /// Determine if this role can be removed from the game
   bool canRemoveRole({
-    required int currentWhites,
-    required int currentUndercovers,
     required String role,
   }) => _gameState.canRemoveRole(
-        currentWhites: currentWhites,
-        currentUndercovers: currentUndercovers,
+        currentWhites: mrWhiteCount,
+        currentUndercovers: undercoverCount,
         role: role,
       );
 
   /// If players are deleted, re-evaluate number of special characters accordingly
-  int specialsToReduce({
-    required int totalPlayers,
-    required int currentWhites,
-    required int currentUndercovers,
-  }) => _gameState.specialsToReduce(
-        totalPlayers: totalPlayers,
-        currentWhites: currentWhites,
-        currentUndercovers: currentUndercovers,
+  int specialsToReduce() => _gameState.specialsToReduce(
+        totalPlayers: playerNames.length,
+        currentWhites: mrWhiteCount,
+        currentUndercovers: undercoverCount,
       );
 
 
