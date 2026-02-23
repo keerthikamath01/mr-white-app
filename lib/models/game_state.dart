@@ -2,10 +2,11 @@ import 'player.dart';
 import 'dart:math'; 
 
 enum GamePhase {
-  waitingForPlayers,
-  showingWords,
+  setup,
+  roleReveal,
   voting,
-  gameOver
+  mrWhiteGuess,
+  summary
 }
 // other phases - assigningRoles, revealing?
 
@@ -28,7 +29,7 @@ class GameState {
   int mrWhites = 1;
   int undercovers = 1;
   Winner winner = Winner.none; // Winner of current game
-  //GamePhase phase; // not used yet
+  //GamePhase phase = GamePhase.setup; // not used yet
 
   final Random _random = Random();
 
@@ -244,6 +245,26 @@ class GameState {
     return 4; // 8+ players 
   }
 
+  /*
+  // Implement later
+  // Start game phases
+  void startRoleReveal() {
+    phase = GamePhase.roleReveal;
+  }
+
+  void startVoting() {
+    phase = GamePhase.voting;
+  }
+
+  void startMrWhiteGuess() {
+    phase = GamePhase.mrWhiteGuess;
+  }
+
+  void endGame(Winner winner) {
+    this.winner = winner;
+    phase = GamePhase.summary;
+  }
+  */
 }
 
 

@@ -21,10 +21,36 @@ class MrWhiteApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
+    // Implement phases
+    //final gameViewModel = context.watch<GameViewModel>(); // rebuilds on notifyListeners
+
+    /*
+    // Choose which screen to display based on global game phase
+    Widget currentView;
+    switch (gameViewModel.phase) {
+      case GamePhase.setup:
+        currentView = const SetupView();
+        break;
+      case GamePhase.roleReveal:
+        currentView = const RoleRevealView();
+        break;
+      case GamePhase.voting:
+        currentView = const VotingView();
+        break;
+      case GamePhase.mrWhiteGuess:
+        currentView = const MrWhiteGuessView();
+        break;
+      case GamePhase.summary:
+        currentView = const SummaryView();
+        break;
+    }
+    */
+
     return MaterialApp(
       title: 'Mr White',
       debugShowCheckedModeBanner: false,
-      home: SetupView(), // First page = Setup view
+      home: SetupView(), // First page = Setup view -> change to current view
     );
   }
 }

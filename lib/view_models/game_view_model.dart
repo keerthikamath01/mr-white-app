@@ -62,6 +62,16 @@ class GameViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /*
+  // Implement game phase
+  GamePhase get phase => _gameState.phase;
+
+  void nextPhase(GamePhase newPhase) {
+    _gameState.phase = newPhase;
+    notifyListeners(); // UI updates automatically
+  }
+  */
+
   /// Returns the current player whose role is being revealed
   Player getCurrentPlayer() => _gameState.getCurrentPlayer();
 

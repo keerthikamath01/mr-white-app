@@ -50,7 +50,7 @@ class _RoleRevealViewState extends State<RoleRevealView> {
             const SizedBox(height: 20),
 
             // Conditionally show word OR reveal button
-            revealed
+            revealed // this can be moved to the player model
               ? Column( // Show column with word + next button
                   children: [
                     
