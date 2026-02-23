@@ -33,7 +33,7 @@ class SummaryView extends StatelessWidget {
             // List of player names, roles, and words
             Expanded(
               child: ListView(
-                children: gameViewModel.players.map((player) {
+                children: gameViewModel.gameState.players.map((player) {
                   return ListTile(
                     title: Text(player.name),
                     subtitle: Text(

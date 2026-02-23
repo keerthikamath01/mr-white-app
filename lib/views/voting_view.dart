@@ -24,7 +24,7 @@ class _VotingViewState extends State<VotingView> {
     
     // Get active (non-eliminated) players
     final activePlayers =
-        widget.gameViewModel.players.where((p) => !p.isEliminated).toList();
+        widget.gameViewModel.gameState.players.where((p) => !p.isEliminated).toList();
 
     return Scaffold(
       

@@ -68,8 +68,8 @@ class _RoleRevealViewState extends State<RoleRevealView> {
                         });
 
                         // All players have roles, move to Voting View
-                        if (widget.gameViewModel.currentRevealIndex ==
-                            widget.gameViewModel.players.length - 1) {
+                        if (widget.gameViewModel.gameState.currentRevealIndex ==
+                            widget.gameViewModel.gameState.players.length - 1) {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
