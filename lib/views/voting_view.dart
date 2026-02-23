@@ -3,14 +3,12 @@ import '../view_models/game_view_model.dart';
 import '../models/player.dart';
 import 'summary_view.dart';
 import '../widgets/exit_game_button.dart';
-
+import 'package:provider/provider.dart';
 
 /// Voting View displays player names and allows group to vote out a player.
 class VotingView extends StatefulWidget {
-  // The game logic and state for this game session
-  final GameViewModel gameViewModel;
 
-  const VotingView({super.key, required this.gameViewModel});
+  const VotingView({super.key});
 
   @override
   State<VotingView> createState() => _VotingViewState();
@@ -21,10 +19,11 @@ class VotingView extends StatefulWidget {
 class _VotingViewState extends State<VotingView> {
   @override
   Widget build(BuildContext context) {
+    final gameViewModel = context.watch<GameViewModel>(); // rebuilds when notifyListeners() is called
     
     // Get active (non-eliminated) players
     final activePlayers =
-        widget.gameViewModel.players.where((p) => !p.isEliminated).toList();
+        gameViewModel.gameState.players.where((p) => !p.isEliminated).toList();
 
     return Scaffold(
       
@@ -32,7 +31,7 @@ class _VotingViewState extends State<VotingView> {
         title: const Text("Voting"),
         automaticallyImplyLeading: false,
         actions: [
-          ExitGameButton(gameViewModel: widget.gameViewModel),
+          ExitGameButton(gameViewModel: gameViewModel),
         ],
       ),
       
@@ -58,7 +57,8 @@ class _VotingViewState extends State<VotingView> {
 
   /// Logic for when a player is voted out
   void _handleVote(Player player) {
-    widget.gameViewModel.eliminatePlayer(player); // Eliminate player
+    final gameViewModel = context.read<GameViewModel>();
+    gameViewModel.eliminatePlayer(player); // Eliminate player
 
     if (player.role == Role.mrWhite) { // Mr. White voted out
       _showMrWhiteGuessPopup(context); // Mr. White guess popup
@@ -66,21 +66,20 @@ class _VotingViewState extends State<VotingView> {
 
     else { // Civilian/Undercover voted out
       // Determine if game is over
-      if (widget.gameViewModel.isGameOver) { // If game over, go to Summary view
+      if (gameViewModel.isGameOver) { // If game over, go to Summary view
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => SummaryView(gameViewModel: widget.gameViewModel),
+            builder: (_) => SummaryView(),
           ),
         );
-      } else { // Else refresh voting UI
-        setState(() {});
-      }
+      } 
     }
   }
 
   /// Show popup for Mr. White to guess word when voted out
   void _showMrWhiteGuessPopup(BuildContext context) {
+
     final TextEditingController controller = TextEditingController();
 
     showDialog(
@@ -107,18 +106,19 @@ class _VotingViewState extends State<VotingView> {
               onPressed: () {
                 final guess = controller.text.trim(); // get guess
 
+                final gameViewModel = context.read<GameViewModel>();
                 // Check the guess in the GameViewModel
-                widget.gameViewModel.resolveMrWhiteGuess(guess);
+                gameViewModel.resolveMrWhiteGuess(guess);
 
                 Navigator.pop(context); // close dialog
 
                 // If game over, navigate to Summary view
-                if (widget.gameViewModel.isGameOver) {
+                if (gameViewModel.isGameOver) {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (_) =>
-                          SummaryView(gameViewModel: widget.gameViewModel),
+                          SummaryView(),
                     ),
                   );
                 } 
@@ -128,7 +128,6 @@ class _VotingViewState extends State<VotingView> {
                       content: Text("Incorrect guess! Game continues."),
                     ),
                   );
-                  setState(() {});
                 }
               },
               child: const Text("Submit"),

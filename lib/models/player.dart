@@ -5,14 +5,24 @@ enum Role { civilian, undercover, mrWhite }
 class Player {
   
   final String name; // name
-  Role role; // role
+  Role role = Role.civilian; // role
   String? word; // word
-  bool isEliminated; // active status
+  bool isEliminated = false; // active status
 
-  Player({
-    required this.name,
-    this.role = Role.civilian,
-    this.word,
-    this.isEliminated = false,
-  });
+  Player({required this.name});
+
+  void reset() {
+    isEliminated = false; // set to alive
+    role = Role.civilian; // temporary no role
+    word = null;          // clear word
+  }
+
+  void setRole(Role role, String? word) {
+    this.role = role;
+    this.word = word;
+  }
+
+  void eliminate() {
+    isEliminated = true;
+  }
 }
