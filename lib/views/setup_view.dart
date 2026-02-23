@@ -272,7 +272,7 @@ class _SetupViewState extends State<SetupView> {
                   ? null // Disable if not enough players
                   : () {
                       // Set up the game in the GameViewModel with the entered names
-                      gameViewModel.setupGame(playerNames, mrWhiteCount, undercoverCount);
+                      gameViewModel.setupGame(playerNames, mrWhites: mrWhiteCount, undercovers: undercoverCount);
 
                       // Navigate to the RoleRevealView to start revealing roles
                       Navigator.push(

@@ -17,83 +17,86 @@ enum Winner {
     none,
 }
 
+
 class GameState {
 
-  List<Player> players; // List of all players in the game
-  int currentRevealIndex; // Index of the current player whose role is being revealed
+  // default constructor used
+  List<Player> players = []; // List of all players in the game
+  int currentRevealIndex = 0; // Index of the current player whose role is being revealed
   String? mainWord; // The main word for civilians
   String? undercoverWord; // The word for the undercover player
-  int mrWhites;
-  int undercovers;
-  Winner winner; // Winner of current game
-  GamePhase phase;
+  int mrWhites = 1;
+  int undercovers = 1;
+  Winner winner = Winner.none; // Winner of current game
+  //GamePhase phase; // not used yet
 
-  GameState({
-    required this.players,
-    this.currentRevealIndex = 0,
-    this.mainWord,
-    this.undercoverWord,
-    this.mrWhites = 1,
-    this.undercovers = 1,
-    this.winner = Winner.none,
-    this.phase = GamePhase.waitingForPlayers,
-  });
+  final Random _random = Random();
+
 
 
   void reset() {
-
-    this.currentRevealIndex = 0;
-    this.winner = Winner.none;
-
     // Reset all players
-    // Currently players are re-initialized anyways?
-    for (final player in this.players) {
-      player.resetPlayer();
+    for (final player in players) {
+      player.reset();
     }
 
+    currentRevealIndex = 0;
+    winner = Winner.none;
     // Optional
-    this.mainWord = null;
-    this.undercoverWord = null;
+    mainWord = null;
+    undercoverWord = null;
 
   }
 
-  // Converts names into Player objects, then assigns words and roles
-  void startGame(List<String> playerNames, int mrWhites, int undercovers) {
+  /// Initialize players list and reset state for a new game
+  void setupGame(List<String> playerNames, {int mrWhites = 1, int undercovers = 1}) {
     
-    // Don't need to re-initialize the same players after restarting??
-    // But what if we add/remove players
-    this.players = playerNames.map((name) => Player(name: name)).toList();
-    
-    this.winner = Winner.none; // redundant?
+    // Map existing players by name to avoid recreating player objects
+    final existingPlayers = {for (var p in players) p.name: p};
+
+    // Build new list in order of playerNames
+    players = playerNames.map((name) {
+      // Reuse existing player if present, otherwise create new
+      return existingPlayers[name] ?? Player(name: name);
+    }).toList();
+
+    winner = Winner.none; // redundant?
     // Number of whites and undercovers
     this.mrWhites = mrWhites;
     this.undercovers = undercovers;
-    
+
+    // Optional: reset words here
+    mainWord = null;
+    undercoverWord = null;
+
   }
 
-  void assignWords(String? main, String? undercover) {
-    this.mainWord = main;
-    this.undercoverWord = undercover;
+
+  /// Assign words to the game
+  void assignWords(String main, String undercover) {
+    mainWord = main;
+    undercoverWord = undercover;
   }
 
-  /// Randomly assigns roles to players:
+
+  /// Randonly assigns roles to players (depends on words already assigned)
   void assignRoles() {
-    
-    final random = Random();
+    // Error message
+    assert(mainWord != null && undercoverWord != null, "Words must be assigned first!");
 
     // Track indices of players who are special characters
     var mrWhiteIndices = <int>{};
     var undercoverIndices = <int>{};
 
     // Randomly choose Mr. White indices
-    while (mrWhiteIndices.length < this.mrWhites) { // set ensures uniqe indices
-      int mrWhiteIndex = random.nextInt(this.players.length);
+    while (mrWhiteIndices.length < mrWhites) { // set ensures uniqe indices
+      int mrWhiteIndex = _random.nextInt(players.length);
       mrWhiteIndices.add(mrWhiteIndex);
     }
 
     // Randomly choose Undercover, different indices than Mr. White
-    while (undercoverIndices.length < this.undercovers) {
-      int undercoverIndex = random.nextInt(this.players.length);
+    while (undercoverIndices.length < undercovers) {
+      int undercoverIndex = _random.nextInt(players.length);
       // Ensure no overlap with Mr. White
       if (!mrWhiteIndices.contains(undercoverIndex)) {
         undercoverIndices.add(undercoverIndex);
@@ -101,15 +104,17 @@ class GameState {
     }
 
     // Assign roles and words to each player
-    for (int i = 0; i < this.players.length; i++) {
+    for (int i = 0; i < players.length; i++) {
       if (mrWhiteIndices.contains(i)) {
-        this.players[i].setRole(Role.mrWhite, null); // Mr. White gets no word
+        players[i].setRole(Role.mrWhite, null); // Mr. White gets no word
       } else if (undercoverIndices.contains(i)) {
-        this.players[i].setRole(Role.undercover, this.undercoverWord);
+        players[i].setRole(Role.undercover, undercoverWord);
       } else {
-        this.players[i].setRole(Role.civilian, this.mainWord);
+        players[i].setRole(Role.civilian, mainWord);
       }
     }
   }
-
 }
+
+
+

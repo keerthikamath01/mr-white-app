@@ -18,7 +18,7 @@ import '../models/game_state.dart';
 class GameViewModel {
   
   // Hold all game state
-  GameState _gameState = GameState(players: []);
+  GameState _gameState = GameState();
 
   // Getter for state
   GameState get gameState => _gameState;
@@ -31,6 +31,8 @@ class GameViewModel {
     {"main": "Pizza", "undercover": "Burger"},
   ];
 
+  final Random _random = Random();
+
 
   // Reset game
   void reset() {
@@ -38,29 +40,16 @@ class GameViewModel {
   }
 
   /// Sets up the game with a list of player names
-  void setupGame(List<String> playerNames, int mrWhites, int undercovers) {
+  void setupGame(List<String> playerNames, {int mrWhites = 1, int undercovers = 1}) {
     
     // pass required data to game state
-    // currently re-initializing players every game, fix this
-    _gameState.startGame(playerNames, mrWhites, undercovers);
-    
-    // Assign words and roles
-    _assignWords();
-    _assignRoles();
-  }
+    _gameState.setupGame(playerNames, mrWhites: mrWhites, undercovers: undercovers);
 
-  /// Randomly selects a word pair for the game
-  void _assignWords() {
-    final random = Random(); // Better way to randomize?
-    final pair = wordPairs[random.nextInt(wordPairs.length)];
-    String? mainWord = pair["main"]; // Need to replace this logic later for AI API
-    String? undercoverWord = pair["undercover"];
-    _gameState.assignWords(mainWord, undercoverWord);
-  }
+    // Generate words and pass to game state
+    final pair = wordPairs[_random.nextInt(wordPairs.length)]; // later replace with AI API
+    _gameState.assignWords(pair["main"]!, pair["undercover"]!);
 
-
-  /// Randomly assigns roles to players:
-  void _assignRoles() {
+    // Assign roles (words must already be assigned)
     _gameState.assignRoles();
   }
 
