@@ -34,35 +34,15 @@ class GameViewModel {
 
   // Reset game
   void reset() {
-    _gameState.currentRevealIndex = 0;
-    _gameState.winner = Winner.none;
-
-    // Reset all players
-    // Currently players are re-initialized anyways?
-    for (final player in _gameState.players) {
-      player.isEliminated = false; // set to alive
-      player.role = Role.civilian; // temporary no role
-      player.word = null;          // clear word
-    }
-
-    // Optional
-    _gameState.mainWord = null;
-    _gameState.undercoverWord = null;
+    _gameState.reset();
   }
 
   /// Sets up the game with a list of player names
-  /// Converts names into Player objects, then assigns words and roles
   void setupGame(List<String> playerNames, int mrWhites, int undercovers) {
     
-    _gameState.winner = Winner.none; // redundant?
-    
-    // Don't need to re-initialize the same players after restarting??
-    // But what if we add/remove players
-    _gameState.players = playerNames.map((name) => Player(name: name)).toList();
-    
-    // Number of whites and undercovers
-    _gameState.mrWhites = mrWhites;
-    _gameState.undercovers = undercovers;
+    // pass required data to game state
+    // currently re-initializing players every game, fix this
+    _gameState.startGame(playerNames, mrWhites, undercovers);
     
     // Assign words and roles
     _assignWords();
@@ -73,48 +53,15 @@ class GameViewModel {
   void _assignWords() {
     final random = Random(); // Better way to randomize?
     final pair = wordPairs[random.nextInt(wordPairs.length)];
-    _gameState.mainWord = pair["main"]; // Need to replace this logic later for AI API
-    _gameState.undercoverWord = pair["undercover"];
+    String? mainWord = pair["main"]; // Need to replace this logic later for AI API
+    String? undercoverWord = pair["undercover"];
+    _gameState.assignWords(mainWord, undercoverWord);
   }
 
 
   /// Randomly assigns roles to players:
   void _assignRoles() {
-    
-    final random = Random();
-
-    // Track indices of players who are special characters
-    var mrWhiteIndices = <int>{};
-    var undercoverIndices = <int>{};
-
-    // Randomly choose Mr. White indices
-    while (mrWhiteIndices.length < _gameState.mrWhites) { // set ensures uniqe indices
-      int mrWhiteIndex = random.nextInt(_gameState.players.length);
-      mrWhiteIndices.add(mrWhiteIndex);
-    }
-
-    // Randomly choose Undercover, different indices than Mr. White
-    while (undercoverIndices.length < _gameState.undercovers) {
-      int undercoverIndex = random.nextInt(_gameState.players.length);
-      // Ensure no overlap with Mr. White
-      if (!mrWhiteIndices.contains(undercoverIndex)) {
-        undercoverIndices.add(undercoverIndex);
-      }
-    }
-
-    // Assign roles and words to each player
-    for (int i = 0; i < _gameState.players.length; i++) {
-      if (mrWhiteIndices.contains(i)) {
-        _gameState.players[i].role = Role.mrWhite;
-        _gameState.players[i].word = null; // Mr. White gets no word
-      } else if (undercoverIndices.contains(i)) {
-        _gameState.players[i].role = Role.undercover;
-        _gameState.players[i].word = _gameState.undercoverWord;
-      } else {
-        _gameState.players[i].role = Role.civilian;
-        _gameState.players[i].word = _gameState.mainWord;
-      }
-    }
+    _gameState.assignRoles();
   }
 
   /// Returns the current player whose role is being revealed

@@ -15,4 +15,15 @@ class Player {
     this.word,
     this.isEliminated = false,
   });
+
+  void resetPlayer() {
+    this.isEliminated = false; // set to alive
+    this.role = Role.civilian; // temporary no role
+    this.word = null;          // clear word
+  }
+
+  void setRole(Role role, String? word) {
+    this.role = role;
+    this.word = word;
+  }
 }
