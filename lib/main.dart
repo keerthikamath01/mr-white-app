@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'views/setup_view.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // wait for flutter
+  await dotenv.load(fileName: "assets/.env"); // load env
   runApp(const MrWhiteApp()); // run app
 }
 
