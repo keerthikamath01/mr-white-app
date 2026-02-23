@@ -74,7 +74,7 @@ class _VotingViewState extends State<VotingView> {
           ),
         );
       } else { // Else refresh voting UI
-        setState(() {});
+        //setState(() {});
       }
     }
   }
@@ -130,7 +130,7 @@ class _VotingViewState extends State<VotingView> {
                       content: Text("Incorrect guess! Game continues."),
                     ),
                   );
-                  setState(() {});
+                  //setState(() {});
                 }
               },
               child: const Text("Submit"),
