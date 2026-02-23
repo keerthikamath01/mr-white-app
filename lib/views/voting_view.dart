@@ -73,9 +73,7 @@ class _VotingViewState extends State<VotingView> {
             builder: (_) => SummaryView(),
           ),
         );
-      } else { // Else refresh voting UI
-        //setState(() {});
-      }
+      } 
     }
   }
 
@@ -130,7 +128,6 @@ class _VotingViewState extends State<VotingView> {
                       content: Text("Incorrect guess! Game continues."),
                     ),
                   );
-                  //setState(() {});
                 }
               },
               child: const Text("Submit"),
