@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import '../view_models/game_view_model.dart';
 import 'voting_view.dart';
 import '../widgets/exit_game_button.dart';
+import 'package:provider/provider.dart';
 
 /// RoleRevealView shows each player their role and word (or Mr. White status) one at a time.
 class RoleRevealView extends StatefulWidget {
-  // The game logic and state for this game session
-  final GameViewModel gameViewModel;
 
-  const RoleRevealView({super.key, required this.gameViewModel});
+  const RoleRevealView({super.key});
 
   @override
   State<RoleRevealView> createState() => _RoleRevealViewState();
@@ -22,8 +21,10 @@ class _RoleRevealViewState extends State<RoleRevealView> {
 
   @override
   Widget build(BuildContext context) {
+    final gameViewModel = context.watch<GameViewModel>();
+
     // Get the current player based on GameViewModel's index
-    final player = widget.gameViewModel.getCurrentPlayer();
+    final player = gameViewModel.getCurrentPlayer();
 
     return Scaffold(
       
@@ -32,7 +33,7 @@ class _RoleRevealViewState extends State<RoleRevealView> {
         title: const Text("Reveal Role"),
         automaticallyImplyLeading: false,
         actions: [
-          ExitGameButton(gameViewModel: widget.gameViewModel),
+          ExitGameButton(gameViewModel: gameViewModel),
         ],
       ),
 
@@ -68,19 +69,17 @@ class _RoleRevealViewState extends State<RoleRevealView> {
                         });
 
                         // All players have roles, move to Voting View
-                        if (widget.gameViewModel.gameState.currentRevealIndex ==
-                            widget.gameViewModel.gameState.players.length - 1) {
+                        if (gameViewModel.gameState.currentRevealIndex ==
+                            gameViewModel.gameState.players.length - 1) {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => VotingView(
-                                gameViewModel: widget.gameViewModel,
-                              ),
+                              builder: (_) => VotingView(),
                             ),
                           );
 
                         } else {
-                          widget.gameViewModel.nextPlayerReveal(); // Else reveal next player
+                          gameViewModel.nextPlayerReveal(); // Else reveal next player
                         }
                       },
                       child: const Text("Next"),

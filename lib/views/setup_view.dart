@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../view_models/game_view_model.dart';
 import 'role_reveal_view.dart';
+import 'package:provider/provider.dart';
 
 /// The SetupView allows players to enter their names before starting the game.
 class SetupView extends StatefulWidget {
@@ -12,8 +13,6 @@ class SetupView extends StatefulWidget {
 
 /// Update view state
 class _SetupViewState extends State<SetupView> {
-  // The GameViewModel manages all game logic, roles, and words
-  final GameViewModel gameViewModel = GameViewModel();
 
   // Controller for the TextField where the user types a player name
   final TextEditingController controller = TextEditingController();
@@ -27,6 +26,8 @@ class _SetupViewState extends State<SetupView> {
 
   @override
   Widget build(BuildContext context) {
+    final gameViewModel = context.watch<GameViewModel>();
+
     return Scaffold(
       
       // Clean up UI later
@@ -279,7 +280,7 @@ class _SetupViewState extends State<SetupView> {
                         context,
                         MaterialPageRoute(
                           builder: (_) =>
-                              RoleRevealView(gameViewModel: gameViewModel),
+                              RoleRevealView(),
                         ),
                       );
                     },

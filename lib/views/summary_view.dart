@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import '../view_models/game_view_model.dart';
+import 'package:provider/provider.dart';
 
 /// SummaryView displays the Winner, player names/roles/words, and provides the option to restart.
 class SummaryView extends StatelessWidget {
-  // The game logic and state for this game session
-  final GameViewModel gameViewModel;
 
-  const SummaryView({super.key, required this.gameViewModel});
+  const SummaryView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final gameViewModel = context.watch<GameViewModel>();
     return Scaffold(
       
       appBar: AppBar(
