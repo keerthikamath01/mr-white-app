@@ -3,6 +3,11 @@ import '../view_models/game_view_model.dart';
 import 'role_reveal_view.dart';
 import 'package:provider/provider.dart';
 
+// Eventually separate widgets into sections for readability
+// _buildPlayerSection(gameViewModel)
+// _buildRoleSection(gameViewModel)
+// _buildStartButton(gameViewModel)
+
 /// The SetupView allows players to enter their names before starting the game.
 class SetupView extends StatefulWidget {
   const SetupView({super.key});
