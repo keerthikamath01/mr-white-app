@@ -42,6 +42,8 @@ class GameViewModel extends ChangeNotifier {
   int mrWhiteCount = 1;
   int undercoverCount = 1;
 
+  bool isLoading = false; // API call in progress
+
   GameViewModel(this._repository);
 
 
@@ -57,15 +59,32 @@ class GameViewModel extends ChangeNotifier {
     // pass required data to game state
     _gameState.setupGame(playerNames, mrWhites: mrWhiteCount, undercovers: undercoverCount);
 
+    // Start loading state
+    isLoading = true;
+    notifyListeners(); // show loading spinner
+
     // Generate words and pass to game state
     //final pair = wordPairs[_random.nextInt(wordPairs.length)]; // later replace with AI API
-    final pair = await _getWordPair();
+    //final pair = await _getWordPair(); 
+    Map<String, String> pair;
+    try {
+      //Await AI/Cache logic
+      pair = await _getWordPair(); 
+    } 
+    catch (e) {
+      print("Setup Error: $e");
+      pair = wordPairs[_random.nextInt(wordPairs.length)]; // temp solution
+      // make backup words list in word repository
+    } 
+    
     _gameState.assignWords(pair["main"]!, pair["undercover"]!);
-
+    
     // Assign roles (words must already be assigned)
     _gameState.assignRoles();
-
+    
+    isLoading = false;
     notifyListeners();
+
   }
 
   /*

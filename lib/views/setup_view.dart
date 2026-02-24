@@ -222,7 +222,7 @@ class _SetupViewState extends State<SetupView> {
 
             // Start Game button - disabled until at least 4 players are added
             ElevatedButton(
-              onPressed: playerNames.length < 4
+              onPressed: (playerNames.length < 4 || gameViewModel.isLoading)
                   ? null // Disable if not enough players
                   : () async {
                       // Set up the game in the GameViewModel with the entered names
@@ -240,7 +240,13 @@ class _SetupViewState extends State<SetupView> {
                         ),
                       );
                     },
-              child: const Text("Start Game"),
+              child: gameViewModel.isLoading // button shows as loading
+                  ? const SizedBox(
+                      height: 20, 
+                      width: 20, 
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text("Start Game"),
             ),
 
           ],
