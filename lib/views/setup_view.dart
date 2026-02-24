@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../view_models/game_view_model.dart';
 import 'role_reveal_view.dart';
 import 'package:provider/provider.dart';
-import '../data/services/gemini_service_test.dart';
+
 
 // Eventually separate widgets into sections for readability
 // _buildPlayerSection(gameViewModel)
@@ -126,21 +126,6 @@ class _SetupViewState extends State<SetupView> {
             const SizedBox(height: 20),
 
 
-            
-            // TEST GEMINI API
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  await testGemini();
-                } catch (e) {
-                  print("Error calling Gemini: $e");
-                }
-              },
-              child: Text("Test Gemini"),
-            ),
-            
-
-
 
             /// Section 2: Roles (Modular sub-section)
             Card(
@@ -239,10 +224,13 @@ class _SetupViewState extends State<SetupView> {
             ElevatedButton(
               onPressed: playerNames.length < 4
                   ? null // Disable if not enough players
-                  : () {
+                  : () async {
                       // Set up the game in the GameViewModel with the entered names
-                      gameViewModel.setupGame(playerNames);
+                      // await for AI API
+                      await gameViewModel.setupGame(playerNames);
 
+                      // ONLY navigate after setup is finished
+                      if (!mounted) return;
                       // Navigate to the RoleRevealView to start revealing roles
                       Navigator.push(
                         context,

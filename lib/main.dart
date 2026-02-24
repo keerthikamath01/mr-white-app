@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart'; // community edition
 import 'data/local/word_cache_manager.dart';
 import 'data/repository/word_repository.dart';
-import 'data/services/gemini_service_test.dart';
+import 'data/services/gemini_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // wait for flutter
@@ -14,13 +14,13 @@ Future<void> main() async {
   await dotenv.load(fileName: "assets/.env"); // load env
 
   // 1. Initialize dependencies
-  //final geminiService = GeminiService();
-  //final cacheManager = WordCacheManager();
-  //final repository = WordRepository(geminiService, cacheManager);
+  final geminiService = GeminiService();
+  final cacheManager = WordCacheManager();
+  final repository = WordRepository(geminiService, cacheManager);
 
   runApp(
     ChangeNotifierProvider(
-      create: (_) => GameViewModel(), // provide the view model
+      create: (_) => GameViewModel(repository), // provide the view model
       child: const MrWhiteApp(),
     ),
   ); // run app
