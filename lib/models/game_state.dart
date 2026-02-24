@@ -208,8 +208,14 @@ class GameState {
   }) {
 
     // There must be at least one special character
-    bool roleNonzero = (role == "white" ? currentWhites > 0 : currentUndercovers > 0);
-    return roleNonzero && (currentWhites + currentUndercovers > 1);
+    bool oneSpecial = (currentWhites + currentUndercovers > 1);
+
+    // Make sure not going into negatives for this role
+    //bool roleNonzero = (role == "white" ? currentWhites > 0 : currentUndercovers > 0);
+    bool roleNonzero = (role == "white" ? currentWhites > 1 : currentUndercovers > 0);
+    // temporary - for this game mode, we need one white minimum
+
+    return roleNonzero; //&& oneSpecial;
   }
 
   /// If players are deleted, re-evaluate number of special characters accordingly
