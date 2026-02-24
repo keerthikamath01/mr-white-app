@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import '../view_models/game_view_model.dart';
+import 'package:provider/provider.dart';
 
 /// Exit game widget, reusable
 /// At top of multiple views
 class ExitGameButton extends StatelessWidget {
-  final GameViewModel gameViewModel;
 
   const ExitGameButton({
     super.key,
-    required this.gameViewModel,
   });
 
   // Function to confirm exit in alert dialog
@@ -30,6 +29,7 @@ class ExitGameButton extends StatelessWidget {
           // Confirm exit
           TextButton(
             onPressed: () {
+                final gameViewModel = context.read<GameViewModel>();
                 gameViewModel.reset(); // reset game
                 Navigator.of(dialogContext).pop(true);
             },
@@ -47,6 +47,7 @@ class ExitGameButton extends StatelessWidget {
   // Exit button
   @override
   Widget build(BuildContext context) {
+    final gameViewModel = context.watch<GameViewModel>(); 
     return TextButton(
       onPressed: () async {
         final shouldExit = await _confirmExit(context); // alert dialog pops up

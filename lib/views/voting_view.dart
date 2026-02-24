@@ -31,7 +31,7 @@ class _VotingViewState extends State<VotingView> {
         title: const Text("Voting"),
         automaticallyImplyLeading: false,
         actions: [
-          ExitGameButton(gameViewModel: gameViewModel),
+          ExitGameButton(),
         ],
       ),
       
