@@ -33,7 +33,7 @@ class _RoleRevealViewState extends State<RoleRevealView> {
         title: const Text("Reveal Role"),
         automaticallyImplyLeading: false,
         actions: [
-          ExitGameButton(gameViewModel: gameViewModel),
+          ExitGameButton(),
         ],
       ),
 

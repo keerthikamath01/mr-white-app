@@ -3,6 +3,7 @@ import '../view_models/game_view_model.dart';
 import 'role_reveal_view.dart';
 import 'package:provider/provider.dart';
 
+
 // Eventually separate widgets into sections for readability
 // _buildPlayerSection(gameViewModel)
 // _buildRoleSection(gameViewModel)
@@ -125,6 +126,7 @@ class _SetupViewState extends State<SetupView> {
             const SizedBox(height: 20),
 
 
+
             /// Section 2: Roles (Modular sub-section)
             Card(
               child: Padding(
@@ -220,12 +222,15 @@ class _SetupViewState extends State<SetupView> {
 
             // Start Game button - disabled until at least 4 players are added
             ElevatedButton(
-              onPressed: playerNames.length < 4
+              onPressed: (playerNames.length < 4 || gameViewModel.isLoading)
                   ? null // Disable if not enough players
-                  : () {
+                  : () async {
                       // Set up the game in the GameViewModel with the entered names
-                      gameViewModel.setupGame(playerNames);
+                      // await for AI API
+                      await gameViewModel.setupGame(playerNames);
 
+                      // ONLY navigate after setup is finished
+                      if (!mounted) return;
                       // Navigate to the RoleRevealView to start revealing roles
                       Navigator.push(
                         context,
@@ -235,7 +240,13 @@ class _SetupViewState extends State<SetupView> {
                         ),
                       );
                     },
-              child: const Text("Start Game"),
+              child: gameViewModel.isLoading // button shows as loading
+                  ? const SizedBox(
+                      height: 20, 
+                      width: 20, 
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text("Start Game"),
             ),
 
           ],

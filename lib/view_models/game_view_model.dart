@@ -3,6 +3,7 @@ import '../models/player.dart';
 import '../models/game_state.dart';
 import 'package:flutter/foundation.dart'; // For ChangeNotifier
 import 'package:flutter/material.dart';
+import '../data/repository/word_repository.dart';
 
 // things to add
 // set max players to 10
@@ -17,6 +18,8 @@ import 'package:flutter/material.dart';
 /// Handles players, roles, words, reveals, eliminations, and determining the winner.
 class GameViewModel extends ChangeNotifier {
   
+  final WordRepository _repository;
+
   // Hold all game state
   GameState _gameState = GameState();
 
@@ -39,6 +42,10 @@ class GameViewModel extends ChangeNotifier {
   int mrWhiteCount = 1;
   int undercoverCount = 1;
 
+  bool isLoading = false; // API call in progress
+
+  GameViewModel(this._repository);
+
 
   // Reset game
   void reset() {
@@ -47,19 +54,37 @@ class GameViewModel extends ChangeNotifier {
   }
 
   /// Sets up the game with a list of player names
-  void setupGame(List<String> playerNames) {
+  Future<void> setupGame(List<String> playerNames) async {
     
     // pass required data to game state
     _gameState.setupGame(playerNames, mrWhites: mrWhiteCount, undercovers: undercoverCount);
 
-    // Generate words and pass to game state
-    final pair = wordPairs[_random.nextInt(wordPairs.length)]; // later replace with AI API
-    _gameState.assignWords(pair["main"]!, pair["undercover"]!);
+    // Start loading state
+    isLoading = true;
+    notifyListeners(); // show loading spinner
 
+    // Generate words and pass to game state
+    //final pair = wordPairs[_random.nextInt(wordPairs.length)]; // later replace with AI API
+    //final pair = await _getWordPair(); 
+    Map<String, String> pair;
+    try {
+      //Await AI/Cache logic
+      pair = await _getWordPair(); 
+    } 
+    catch (e) {
+      print("Setup Error: $e");
+      pair = wordPairs[_random.nextInt(wordPairs.length)]; // temp solution
+      // make backup words list in word repository
+    } 
+    
+    _gameState.assignWords(pair["main"]!, pair["undercover"]!);
+    
     // Assign roles (words must already be assigned)
     _gameState.assignRoles();
-
+    
+    isLoading = false;
     notifyListeners();
+
   }
 
   /*
@@ -71,6 +96,16 @@ class GameViewModel extends ChangeNotifier {
     notifyListeners(); // UI updates automatically
   }
   */
+
+  Future<Map<String, String>> _getWordPair() async {
+    // Talk to the repository (which handles Hive vs Gemini)
+    final pair = await _repository.getNextWordPair();
+    
+    notifyListeners();
+    // move to loading block in setup game function eventually
+
+    return pair;
+  }
 
   /// Returns the current player whose role is being revealed
   Player getCurrentPlayer() => _gameState.getCurrentPlayer();
