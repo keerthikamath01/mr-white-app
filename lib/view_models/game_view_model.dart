@@ -53,6 +53,12 @@ class GameViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Clear players list in setup view
+  void clearPlayers() {
+    playerNames = [];
+    notifyListeners();
+  }
+
   /// Sets up the game with a list of player names
   Future<void> setupGame(List<String> playerNames) async {
     

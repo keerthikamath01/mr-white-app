@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../view_models/game_view_model.dart';
 import 'package:provider/provider.dart';
+import 'setup_view.dart';
 
 /// SummaryView displays the Winner, player names/roles/words, and provides the option to restart.
 class SummaryView extends StatelessWidget {
@@ -47,7 +48,8 @@ class SummaryView extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 gameViewModel.reset();
-                Navigator.popUntil(context, (route) => route.isFirst);
+                //Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.popUntil(context, ModalRoute.withName('/setup'));
               },
               child: const Text("Back to Setup"),
             )

@@ -56,7 +56,8 @@ class ExitGameButton extends StatelessWidget {
 
         if (shouldExit) {
           gameViewModel.reset();
-          Navigator.of(context).popUntil((route) => route.isFirst);
+          //Navigator.of(context).popUntil((route) => route.isFirst);
+          Navigator.popUntil(context, ModalRoute.withName('/setup'));
         }
       },
       child: const Text(

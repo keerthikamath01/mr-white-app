@@ -48,6 +48,7 @@ class GameState {
     undercoverWord = null;
 
   }
+  
 
   /// Initialize players list and reset state for a new game
   void setupGame(List<String> playerNames, {int mrWhites = 1, int undercovers = 1}) {

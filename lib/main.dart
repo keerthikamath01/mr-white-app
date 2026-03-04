@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'views/setup_view.dart';
+import 'views/init_view.dart';
 import 'view_models/game_view_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -61,7 +61,7 @@ class MrWhiteApp extends StatelessWidget {
     return MaterialApp(
       title: 'Mr White',
       debugShowCheckedModeBanner: false,
-      home: SetupView(), // First page = Setup view -> change to current view
+      home: InitView(), // First page = Setup view -> change to current view
     );
   }
 }

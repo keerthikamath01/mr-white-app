@@ -140,12 +140,6 @@ class _SetupViewState extends State<SetupView> {
                       "Roles",
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-
-                    // Display total players (clean this up)
-                    Text(
-                      "Total Players: ${playerNames.length}", // dynamic total
-                      style: const TextStyle(fontSize: 16),
-                    ),
                     
                     // Mr. White selector row
                     Row(
@@ -212,13 +206,35 @@ class _SetupViewState extends State<SetupView> {
                         ),
                       ],
                     ),
+                    SizedBox(height: 8), // temp solution for vertical spacing
 
+                    // Display total players (clean this up)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Total Players", 
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              "${playerNames.length}",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ), // dynamic total
+                            SizedBox(width: 40) // temp solution to line up numbers
+                          ]
+                        ),
+                      ]
+                    )
+                    
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 20),
 
+            // TODO: Add Clear Players button
 
             // Start Game button - disabled until at least 4 players are added
             ElevatedButton(
