@@ -83,7 +83,7 @@ The project integrates an AI API for word generation with caching, and will even
 * Track eliminations and evaluate the winner
 * Reactive UI via Provider and ChangeNotifier
 * Dynamically generated word pairs using Gemini API integration (requires a .env file in assets/.env containing a free-tier Gemini API key)
-* Hive databse for caching word pairs locally to avoid repeated API calls
+* Hive database for caching word pairs locally to avoid repeated API calls
 
 
 
