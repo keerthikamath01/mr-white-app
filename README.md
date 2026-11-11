@@ -166,6 +166,13 @@ lib/
 
 
 
+
+
+
+## Sample Page - Setup View (UI In Progress)
+<img width="959" height="431" alt="image" src="https://github.com/user-attachments/assets/805c366f-26c5-4b4d-80f0-f897ce0eaf63" />
+
+
 &nbsp;
 
 
